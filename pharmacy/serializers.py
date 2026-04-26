@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Medicine, Prescription, PrescriptionItem
 from billing.models import Invoice
+from audit.utils import log_action
 
 class MedicineSerializer(serializers.ModelSerializer):
     class Meta:
@@ -52,11 +53,15 @@ class PrescriptionSerializer(serializers.ModelSerializer):
             
         # Generate Invoice if there are available items
         if available_items_cost > 0:
-            Invoice.objects.create(
+            invoice = Invoice.objects.create(
                 patient=prescription.patient,
                 prescription=prescription,
                 total_amount=available_items_cost,
-                payment_status='pending'
+                payment_status='pending',
+                invoice_type='pharmacy'
             )
-            
+            request = self.context.get('request')
+            if request is not None and request.user.is_authenticated:
+                log_action(request.user, 'Pharmacy invoice created', f'Pharmacy invoice #{invoice.id} created for prescription #{prescription.id}.')
+
         return prescription
