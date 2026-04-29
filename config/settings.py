@@ -104,7 +104,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django_tenants.postgresql_backend',
-        'NAME': 'dentacore_db',
+        'NAME': 'alyah_dental_db',
         'USER': 'postgres',
         'PASSWORD': 'nebila@gmail.com',
         'HOST': 'localhost',
